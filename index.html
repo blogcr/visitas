@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Visitas em tempo real</title>
+
+<style>
+
+body{
+font-family:system-ui;
+max-width:900px;
+margin:auto;
+padding:30px;
+}
+
+h1{
+font-size:20px;
+margin-bottom:10px;
+}
+
+#contador{
+font-size:13px;
+color:#666;
+margin-bottom:20px;
+}
+
+.linha{
+display:grid;
+grid-template-columns:1fr 200px 200px;
+gap:20px;
+padding:8px 0;
+border-bottom:1px solid #eee;
+font-size:14px;
+}
+
+.titulo a{
+text-decoration:none;
+color:#000;
+}
+
+.titulo a:hover{
+text-decoration:underline;
+}
+
+.autor{
+color:#B71C1C;
+font-weight:600;
+}
+
+.data{
+color:#666;
+text-align:right;
+font-size:13px;
+}
+
+/* flash de nova visita */
+
+.flash{
+animation:flash 2s ease;
+}
+
+@keyframes flash{
+0%{background:#fff8c4;}
+100%{background:transparent;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Visitas em tempo real</h1>
+
+<div id="contador"></div>
+
+<div id="lista"></div>
+
+<script>
+
+var api="https://script.google.com/macros/s/AKfycbxJkEccCVZOs4qOV45g6L_sjKH2L0US0Vpq2j8pWzyca4a8IpSbpCfuaLtKJYGtqxg/exec";
+
+var ultimasVisitas=[];
+
+function formatar(data){
+
+var d=new Date(data);
+
+var agora=new Date();
+
+var diff=(agora-d)/1000;
+
+if(diff<60){
+return "agora mesmo";
+}
+
+var dias=["dom","seg","ter","qua","qui","sex","sáb"];
+
+return dias[d.getDay()] + ", " +
+String(d.getDate()).padStart(2,"0")+"."+
+String(d.getMonth()+1).padStart(2,"0")+"."+
+d.getFullYear()+" "+
+String(d.getHours()).padStart(2,"0")+":"+
+String(d.getMinutes()).padStart(2,"0");
+
+}
+
+function contarUltimoMinuto(data){
+
+var agora=new Date();
+
+return data.filter(function(item){
+
+var d=new Date(item.data);
+
+return (agora-d)/1000 < 60;
+
+}).length;
+
+}
+
+function carregar(){
+
+fetch(api)
+.then(r=>r.json())
+.then(data=>{
+
+var html="";
+
+var novas=0;
+
+data.forEach(function(item,i){
+
+var nova=!ultimasVisitas.includes(item.data+i);
+
+if(nova) novas++;
+
+html+=`
+<div class="linha ${nova?'flash':''}">
+
+<div class="titulo">
+<a href="${item.url}" target="_blank">
+${item.titulo}
+</a>
+</div>
+
+<div class="autor">
+${item.autor}
+</div>
+
+<div class="data">
+${formatar(item.data)}
+</div>
+
+</div>
+`;
+
+});
+
+document.getElementById("lista").innerHTML=html;
+
+var minuto=contarUltimoMinuto(data);
+
+document.getElementById("contador").innerHTML=
+minuto+" acessos no último minuto";
+
+ultimasVisitas=data.map((x,i)=>x.data+i);
+
+});
+
+}
+
+carregar();
+
+setInterval(carregar,4000);
+
+</script>
+
+</body>
+
+</html>
