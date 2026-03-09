@@ -10,6 +10,18 @@
 
 <style>
 
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Visitas em tempo real</title>
+
+<style>
+
 body{
 font-family:system-ui,-apple-system,BlinkMacSystemFont;
 max-width:900px;
@@ -89,6 +101,139 @@ animation:flash 2s ease;
 }
 
 /* desktop mantém lista horizontal */
+
+@media(min-width:700px){
+
+.item{
+display:grid;
+grid-template-columns:1fr 200px 200px;
+gap:20px;
+background:transparent;
+border-bottom:1px solid #eee;
+margin:0;
+padding:10px 0;
+}
+
+.item:nth-child(odd),
+.item:nth-child(even){
+background:transparent;
+}
+
+.meta{
+display:contents;
+}
+
+.titulo{
+margin:0;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Visitas em tempo real</h1>
+<div id="contador"></div>
+
+<div id="lista"></div>
+
+<script>
+
+var api="https://script.google.com/macros/s/AKfycbxJkEccCVZOs4qOV45g6L_sjKH2L0US0Vpq2j8pWzyca4a8IpSbpCfuaLtKJYGtqxg/exec";
+
+var anteriores=[];
+
+function formatar(data){
+
+var d=new Date(data);
+var agora=new Date();
+var diff=(agora-d)/1000;
+
+if(diff<60){
+return "agora mesmo";
+}
+
+var dias=["dom","seg","ter","qua","qui","sex","sáb"];
+
+return dias[d.getDay()] + ", " +
+String(d.getDate()).padStart(2,"0")+"."+
+String(d.getMonth()+1).padStart(2,"0")+"."+
+d.getFullYear()+" "+
+String(d.getHours()).padStart(2,"0")+":"+
+String(d.getMinutes()).padStart(2,"0");
+
+}
+
+function contarUltimoMinuto(data){
+
+var agora=new Date();
+
+return data.filter(function(item){
+
+var d=new Date(item.data);
+
+return (agora-d)/1000 < 60;
+
+}).length;
+
+}
+
+function carregar(){
+
+fetch(api)
+.then(r=>r.json())
+.then(data=>{
+
+var html="";
+var novas=[];
+
+data.forEach(function(item,i){
+
+var id=item.data+i;
+var nova=!anteriores.includes(id);
+
+html+=`
+<div class="item ${nova?'flash':''}">
+
+<div class="titulo">
+<a href="${item.url}" target="_blank">
+${item.titulo}
+</a>
+</div>
+
+<div class="meta">
+<div class="autor">${item.autor}</div>
+<div class="data">${formatar(item.data)}</div>
+</div>
+
+</div>
+`;
+
+novas.push(id);
+
+});
+
+document.getElementById("lista").innerHTML=html;
+
+document.getElementById("contador").innerHTML=
+contarUltimoMinuto(data)+" acessos no último minuto";
+
+anteriores=novas;
+
+});
+
+}
+
+carregar();
+setInterval(carregar,4000);
+
+</script>
+
+</body>
+</html>/* desktop mantém lista horizontal */
 
 @media(min-width:700px){
 
