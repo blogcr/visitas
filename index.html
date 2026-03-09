@@ -4,22 +4,23 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Visitas em tempo real</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<title>Visitas em tempo real</title>
 
 <style>
 
 body{
-font-family:system-ui;
+font-family:system-ui,-apple-system,BlinkMacSystemFont;
 max-width:900px;
 margin:auto;
-padding:30px;
+padding:20px;
+background:#ffffff;
 }
 
 h1{
 font-size:20px;
-margin-bottom:10px;
+margin-bottom:6px;
 }
 
 #contador{
@@ -28,13 +29,28 @@ color:#666;
 margin-bottom:20px;
 }
 
-.linha{
-display:grid;
-grid-template-columns:1fr 200px 200px;
-gap:20px;
-padding:8px 0;
-border-bottom:1px solid #eee;
-font-size:14px;
+/* bloco de visita */
+
+.item{
+padding:14px 12px;
+border-radius:6px;
+margin-bottom:6px;
+}
+
+/* alternância de cor */
+
+.item:nth-child(odd){
+background:#f7f7f7;
+}
+
+.item:nth-child(even){
+background:#efefef;
+}
+
+.titulo{
+font-size:15px;
+margin-bottom:6px;
+line-height:1.35;
 }
 
 .titulo a{
@@ -46,15 +62,19 @@ color:#000;
 text-decoration:underline;
 }
 
+.meta{
+display:flex;
+justify-content:space-between;
+font-size:13px;
+}
+
 .autor{
 color:#B71C1C;
 font-weight:600;
 }
 
 .data{
-color:#666;
-text-align:right;
-font-size:13px;
+color:#777;
 }
 
 /* flash de nova visita */
@@ -64,8 +84,37 @@ animation:flash 2s ease;
 }
 
 @keyframes flash{
-0%{background:#fff8c4;}
-100%{background:transparent;}
+0%{background:#fff6b8;}
+100%{background:inherit;}
+}
+
+/* desktop mantém lista horizontal */
+
+@media(min-width:700px){
+
+.item{
+display:grid;
+grid-template-columns:1fr 200px 200px;
+gap:20px;
+background:transparent;
+border-bottom:1px solid #eee;
+margin:0;
+padding:10px 0;
+}
+
+.item:nth-child(odd),
+.item:nth-child(even){
+background:transparent;
+}
+
+.meta{
+display:contents;
+}
+
+.titulo{
+margin:0;
+}
+
 }
 
 </style>
@@ -75,7 +124,6 @@ animation:flash 2s ease;
 <body>
 
 <h1>Visitas em tempo real</h1>
-
 <div id="contador"></div>
 
 <div id="lista"></div>
@@ -84,14 +132,12 @@ animation:flash 2s ease;
 
 var api="https://script.google.com/macros/s/AKfycbxJkEccCVZOs4qOV45g6L_sjKH2L0US0Vpq2j8pWzyca4a8IpSbpCfuaLtKJYGtqxg/exec";
 
-var ultimasVisitas=[];
+var anteriores=[];
 
 function formatar(data){
 
 var d=new Date(data);
-
 var agora=new Date();
-
 var diff=(agora-d)/1000;
 
 if(diff<60){
@@ -130,17 +176,15 @@ fetch(api)
 .then(data=>{
 
 var html="";
-
-var novas=0;
+var novas=[];
 
 data.forEach(function(item,i){
 
-var nova=!ultimasVisitas.includes(item.data+i);
-
-if(nova) novas++;
+var id=item.data+i;
+var nova=!anteriores.includes(id);
 
 html+=`
-<div class="linha ${nova?'flash':''}">
+<div class="item ${nova?'flash':''}">
 
 <div class="titulo">
 <a href="${item.url}" target="_blank">
@@ -148,38 +192,33 @@ ${item.titulo}
 </a>
 </div>
 
-<div class="autor">
-${item.autor}
-</div>
-
-<div class="data">
-${formatar(item.data)}
+<div class="meta">
+<div class="autor">${item.autor}</div>
+<div class="data">${formatar(item.data)}</div>
 </div>
 
 </div>
 `;
 
+novas.push(id);
+
 });
 
 document.getElementById("lista").innerHTML=html;
 
-var minuto=contarUltimoMinuto(data);
-
 document.getElementById("contador").innerHTML=
-minuto+" acessos no último minuto";
+contarUltimoMinuto(data)+" acessos no último minuto";
 
-ultimasVisitas=data.map((x,i)=>x.data+i);
+anteriores=novas;
 
 });
 
 }
 
 carregar();
-
 setInterval(carregar,4000);
 
 </script>
 
 </body>
-
 </html>
