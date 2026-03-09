@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Visitas em tempo real</title>
+<title>ALCR ▪ Visitas em tempo real</title>
 
 <link rel="icon" href="favicon.ico">
 
@@ -43,6 +43,7 @@ justify-content:space-between;
 padding:14px;
 border-radius:8px;
 margin-bottom:8px;
+position:relative;
 }
 
 .item:nth-child(odd){background:#f5f5f5;}
@@ -71,6 +72,20 @@ font-weight:600;
 
 .data{
 color:#777;
+}
+
+/* destaque texto em ascensão */
+
+.trending{
+border-left:4px solid #B71C1C;
+padding-left:10px;
+}
+
+.trending-label{
+font-size:11px;
+color:#B71C1C;
+font-weight:700;
+margin-left:6px;
 }
 
 </style>
@@ -137,6 +152,20 @@ String(d.getMinutes()).padStart(2,"0");
 
 }
 
+function detectarAscensao(data){
+
+var contagem={};
+
+data.forEach(function(item){
+
+contagem[item.titulo]=(contagem[item.titulo]||0)+1;
+
+});
+
+return contagem;
+
+}
+
 function carregar(){
 
 fetch(api)
@@ -149,17 +178,20 @@ leitoresAtivos(data)+" leitores ativos";
 document.getElementById("contador").innerHTML=
 contarMinuto(data)+" acessos no último minuto";
 
+var contagem=detectarAscensao(data);
+
 var html="";
 
 data.forEach(function(item){
 
+var trending = contagem[item.titulo] >= 3;
+
 html+=`
-<div class="item">
+<div class="item ${trending?'trending':''}">
 
 <div class="titulo">
-<a href="${item.url}" target="_blank">
-${item.titulo}
-</a>
+<a href="${item.url}" target="_blank">${item.titulo}</a>
+${trending?'<span class="trending-label">em ascensão</span>':''}
 </div>
 
 <div class="meta">
