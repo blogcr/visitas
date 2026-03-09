@@ -10,74 +10,65 @@
 
 <style>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Visitas em tempo real</title>
-
-<style>
-
 body{
 font-family:system-ui,-apple-system,BlinkMacSystemFont;
-max-width:900px;
-margin:auto;
-padding:20px;
 background:#ffffff;
+margin:0;
 }
 
+.container{
+max-width:760px;
+margin:auto;
+padding:28px 22px;
+}
+
+/* título */
+
 h1{
-font-size:20px;
-margin-bottom:6px;
+font-size:24px;
+margin-bottom:4px;
 }
 
 #contador{
-font-size:13px;
+font-size:14px;
 color:#666;
-margin-bottom:20px;
+margin-bottom:24px;
 }
 
-/* bloco de visita */
+/* bloco */
 
 .item{
-padding:14px 12px;
-border-radius:6px;
-margin-bottom:6px;
+padding:15px 14px;
+border-radius:8px;
+margin-bottom:8px;
 }
 
-/* alternância de cor */
+.item:nth-child(odd){ background:#f5f5f5; }
+.item:nth-child(even){ background:#eeeeee; }
 
-.item:nth-child(odd){
-background:#f7f7f7;
-}
-
-.item:nth-child(even){
-background:#efefef;
-}
+/* título */
 
 .titulo{
-font-size:15px;
-margin-bottom:6px;
+font-size:16px;
 line-height:1.35;
+margin-bottom:6px;
 }
 
 .titulo a{
-text-decoration:none;
 color:#000;
+text-decoration:none;
 }
 
 .titulo a:hover{
 text-decoration:underline;
 }
 
+/* autor + data */
+
 .meta{
 display:flex;
 justify-content:space-between;
-font-size:13px;
+font-size:14px;
 }
 
 .autor{
@@ -89,42 +80,31 @@ font-weight:600;
 color:#777;
 }
 
-/* flash de nova visita */
+/* destaque visita nova */
 
 .flash{
-animation:flash 2s ease;
+animation:flash 1.8s ease;
 }
 
 @keyframes flash{
-0%{background:#fff6b8;}
+0%{background:#fff4a8;}
 100%{background:inherit;}
 }
 
-/* desktop mantém lista horizontal */
+/* celular */
 
-@media(min-width:700px){
+@media (max-width:600px){
 
-.item{
-display:grid;
-grid-template-columns:1fr 200px 200px;
-gap:20px;
-background:transparent;
-border-bottom:1px solid #eee;
-margin:0;
-padding:10px 0;
-}
-
-.item:nth-child(odd),
-.item:nth-child(even){
-background:transparent;
-}
-
-.meta{
-display:contents;
+.container{
+padding:22px 16px;
 }
 
 .titulo{
-margin:0;
+font-size:15px;
+}
+
+.meta{
+font-size:13px;
 }
 
 }
@@ -135,10 +115,14 @@ margin:0;
 
 <body>
 
+<div class="container">
+
 <h1>Visitas em tempo real</h1>
 <div id="contador"></div>
 
 <div id="lista"></div>
+
+</div>
 
 <script>
 
@@ -152,13 +136,11 @@ var d=new Date(data);
 var agora=new Date();
 var diff=(agora-d)/1000;
 
-if(diff<60){
-return "agora mesmo";
-}
+if(diff<60) return "agora mesmo";
 
 var dias=["dom","seg","ter","qua","qui","sex","sáb"];
 
-return dias[d.getDay()] + ", " +
+return dias[d.getDay()]+", "+
 String(d.getDate()).padStart(2,"0")+"."+
 String(d.getMonth()+1).padStart(2,"0")+"."+
 d.getFullYear()+" "+
@@ -167,7 +149,7 @@ String(d.getMinutes()).padStart(2,"0");
 
 }
 
-function contarUltimoMinuto(data){
+function contarMinuto(data){
 
 var agora=new Date();
 
@@ -219,140 +201,7 @@ novas.push(id);
 document.getElementById("lista").innerHTML=html;
 
 document.getElementById("contador").innerHTML=
-contarUltimoMinuto(data)+" acessos no último minuto";
-
-anteriores=novas;
-
-});
-
-}
-
-carregar();
-setInterval(carregar,4000);
-
-</script>
-
-</body>
-</html>/* desktop mantém lista horizontal */
-
-@media(min-width:700px){
-
-.item{
-display:grid;
-grid-template-columns:1fr 200px 200px;
-gap:20px;
-background:transparent;
-border-bottom:1px solid #eee;
-margin:0;
-padding:10px 0;
-}
-
-.item:nth-child(odd),
-.item:nth-child(even){
-background:transparent;
-}
-
-.meta{
-display:contents;
-}
-
-.titulo{
-margin:0;
-}
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h1>Visitas em tempo real</h1>
-<div id="contador"></div>
-
-<div id="lista"></div>
-
-<script>
-
-var api="https://script.google.com/macros/s/AKfycbxJkEccCVZOs4qOV45g6L_sjKH2L0US0Vpq2j8pWzyca4a8IpSbpCfuaLtKJYGtqxg/exec";
-
-var anteriores=[];
-
-function formatar(data){
-
-var d=new Date(data);
-var agora=new Date();
-var diff=(agora-d)/1000;
-
-if(diff<60){
-return "agora mesmo";
-}
-
-var dias=["dom","seg","ter","qua","qui","sex","sáb"];
-
-return dias[d.getDay()] + ", " +
-String(d.getDate()).padStart(2,"0")+"."+
-String(d.getMonth()+1).padStart(2,"0")+"."+
-d.getFullYear()+" "+
-String(d.getHours()).padStart(2,"0")+":"+
-String(d.getMinutes()).padStart(2,"0");
-
-}
-
-function contarUltimoMinuto(data){
-
-var agora=new Date();
-
-return data.filter(function(item){
-
-var d=new Date(item.data);
-
-return (agora-d)/1000 < 60;
-
-}).length;
-
-}
-
-function carregar(){
-
-fetch(api)
-.then(r=>r.json())
-.then(data=>{
-
-var html="";
-var novas=[];
-
-data.forEach(function(item,i){
-
-var id=item.data+i;
-var nova=!anteriores.includes(id);
-
-html+=`
-<div class="item ${nova?'flash':''}">
-
-<div class="titulo">
-<a href="${item.url}" target="_blank">
-${item.titulo}
-</a>
-</div>
-
-<div class="meta">
-<div class="autor">${item.autor}</div>
-<div class="data">${formatar(item.data)}</div>
-</div>
-
-</div>
-`;
-
-novas.push(id);
-
-});
-
-document.getElementById("lista").innerHTML=html;
-
-document.getElementById("contador").innerHTML=
-contarUltimoMinuto(data)+" acessos no último minuto";
+contarMinuto(data)+" acessos no último minuto";
 
 anteriores=novas;
 
