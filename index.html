@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ALCR ▪ Visitas em tempo real</title>
+<title>ALCR ▪ Ao vivo</title>
 
 <link rel="icon" href="favicon.ico">
 
@@ -107,7 +107,7 @@ font-size:80%;
 
 <div class="container">
 
-<h1>ALCR ▪ Visitas em tempo real</h1>
+<h1>ALCR ▪ Ao vivo</h1>
 
 <div class="stats">
 <div id="ativos"></div>
@@ -135,14 +135,14 @@ return (agora-d)/1000 < 180;
 
 }
 
-function contarMinuto(data){
+function contarHora(data){
 
 var agora=new Date();
 
 return data.filter(function(item){
 
 var d=new Date(item.data);
-return (agora-d)/1000 < 60;
+return (agora-d)/1000 < 3600;
 
 }).length;
 
@@ -187,7 +187,7 @@ document.getElementById("ativos").innerHTML=
 leitoresAtivos(data)+" leitores ativos";
 
 document.getElementById("contador").innerHTML=
-contarMinuto(data)+" acessos no último minuto";
+contarHora(data)+" acessos na última hora";
 
 var contagem=detectarAscensao(data);
 
