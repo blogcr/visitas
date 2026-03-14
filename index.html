@@ -195,7 +195,9 @@ var html="";
 
 data.forEach(function(item){
 
-var trending = contagem[item.titulo] >= 3;
+var trending =
+contagem[item.titulo] >= 6 &&
+contagem[item.titulo] >= acessosHora * 0.15;
 
 html+=`
 <div class="item ${trending?'trending':''}">
