@@ -183,11 +183,13 @@ fetch(api)
 .then(r=>r.json())
 .then(data=>{
 
+var acessosHora = contarHora(data);
+
 document.getElementById("ativos").innerHTML=
 leitoresAtivos(data)+" leitores ativos";
 
 document.getElementById("contador").innerHTML=
-contarHora(data)+" acessos na última hora";
+acessosHora+" acessos na última hora";
 
 var contagem=detectarAscensao(data);
 
